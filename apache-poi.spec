@@ -12,7 +12,11 @@ License:        ASL 2.0
 URL:            http://poi.apache.org/
 Source0:        http://www.apache.org/dist/poi/release/src/poi-src-%{version}-%{reldate}.tar.gz
 #Source0:        http://www.apache.org/dist/poi/dev/src/poi-src-%{version}%{?rcver}-%{reldate}.tar.gz
+%if 0%{?fedora}
 Source1:        http://www.ecma-international.org/publications/files/ECMA-ST/Office%20Open%20XML%201st%20edition%20Part%204%20(PDF).zip
+%else
+Source1:        Office-Open-XML-1st-edition-Part4-PDF.zip
+%endif
 Source2:        http://repo2.maven.org/maven2/org/apache/poi/poi/%{version}/poi-%{version}.pom
 Source3:        http://repo2.maven.org/maven2/org/apache/poi/poi-examples/%{version}/poi-examples-%{version}.pom
 Source4:        http://repo2.maven.org/maven2/org/apache/poi/poi-excelant/%{version}/poi-excelant-%{version}.pom
