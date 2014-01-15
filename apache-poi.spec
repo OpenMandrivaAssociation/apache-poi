@@ -172,7 +172,7 @@ ln -s ../../javadoc/%{name} docs/apidocs
 %if 0
 ant -propertyfile build.properties test
 %else
-ant -Dmaven.test.failure.ignore=true -propertyfile build.properties test
+ant -propertyfile build.properties test || :
 %endif
 
 
