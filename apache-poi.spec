@@ -118,7 +118,7 @@ popd
 %if 0%{?fedora}
 %else
 # dumb strict policies
-cp %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} .
+cp %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} .
 %endif
 
 %build
