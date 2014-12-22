@@ -1,32 +1,28 @@
 %{?_javapackages_macros:%_javapackages_macros}
-%global reldate 20121203
+%global reldate 20140818
 %global rcver %{nil}
 
 Name:           apache-poi
-Version:        3.9
-Release:        2.0%{?dist}
+Version:        3.10.1
+Release:        1.1
 Summary:        The Java API for Microsoft Documents
 
-
+Group:          Development/Java
 License:        ASL 2.0
 URL:            http://poi.apache.org/
 Source0:        http://www.apache.org/dist/poi/release/src/poi-src-%{version}-%{reldate}.tar.gz
 #Source0:        http://www.apache.org/dist/poi/dev/src/poi-src-%{version}%{?rcver}-%{reldate}.tar.gz
-%if 0%{?fedora}
-Source1:        http://www.ecma-international.org/publications/files/ECMA-ST/Office%20Open%20XML%201st%20edition%20Part%204%20(PDF).zip
-%else
 Source1:        Office-Open-XML-1st-edition-Part4-PDF.zip
-%endif
 Source2:        http://repo2.maven.org/maven2/org/apache/poi/poi/%{version}/poi-%{version}.pom
 Source3:        http://repo2.maven.org/maven2/org/apache/poi/poi-examples/%{version}/poi-examples-%{version}.pom
 Source4:        http://repo2.maven.org/maven2/org/apache/poi/poi-excelant/%{version}/poi-excelant-%{version}.pom
 Source5:        http://repo2.maven.org/maven2/org/apache/poi/poi-ooxml/%{version}/poi-ooxml-%{version}.pom
 Source6:        http://repo2.maven.org/maven2/org/apache/poi/poi-ooxml-schemas/%{version}/poi-ooxml-schemas-%{version}.pom
 Source7:        http://repo2.maven.org/maven2/org/apache/poi/poi-scratchpad/%{version}/poi-scratchpad-%{version}.pom
+Source100:	apache-poi.rpmlintrc
 #Force compile of xsds if disconnected
-Patch1:         %{name}-3.7-compile-xsds.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=799078
-Patch2:         apache-poi-CVE-2012-0213.patch
+Patch1:         %{name}-compile-xsds.patch
+Patch2:         %{name}-build.patch
 BuildArch:      noarch
 
 BuildRequires:  jpackage-utils
@@ -36,12 +32,9 @@ BuildRequires:  dom4j
 BuildRequires:  apache-commons-logging
 BuildRequires:  junit
 #Fonts for testing
-%if 0%{?fedora}
-BuildRequires:  fontconfig liberation-sans-fonts liberation-serif-fonts
-%else
 BuildRequires:  fontconfig
-BuildRequires:  fonts-ttf-liberation
-%endif
+BuildRequires:	fonts-ttf-liberation
+BuildRequires:  jacoco
 BuildRequires:  log4j
 BuildRequires:  xmlbeans
 
@@ -85,7 +78,7 @@ There are also projects for Visio (HDGF) and Publisher (HPBF).
 
 %package javadoc
 Summary:        Javadocs for %{name}
-
+Group:          Documentation
 Requires:       jpackage-utils
 
 %description javadoc
@@ -94,7 +87,7 @@ This package contains the API documentation for %{name}.
 
 %package manual
 Summary:        Manual for %{name}
-
+Group:          Documentation
 Requires:       jpackage-utils
 Requires:       %{name}-javadoc = %{version}-%{release}
 
@@ -105,21 +98,17 @@ The manual for %{name}.
 %prep
 %setup -q -n poi-%{version}%{?rcver}
 %patch1 -p1 -b .compile-xsds
-%patch2 -p0 -b .CVE-2012-0213
+%patch2 -p1 -b .build
 find -name '*.class' -exec rm -f '{}' \;
 find -name '*.jar' -exec rm -f '{}' \;
 mkdir lib ooxml-lib
-build-jar-repository -s -p lib ant commons-codec commons-logging junit log4j
+build-jar-repository -s -p lib ant commons-codec commons-logging jacoco junit log4j
 build-jar-repository -s -p ooxml-lib dom4j xmlbeans/xbean
 #Unpack the XMLSchema
 pushd ooxml-lib
 unzip "%SOURCE1" OfficeOpenXML-XMLSchema.zip
 popd
-%if 0%{?fedora}
-%else
-# dumb strict policies
-cp %{SOURCE2} %{SOURCE3} %{SOURCE4} %{SOURCE5} %{SOURCE6} %{SOURCE7} .
-%endif
+
 
 %build
 cat > build.properties <<'EOF'
@@ -129,7 +118,8 @@ main.commons-logging.jar=lib/commons-logging.jar
 main.log4j.jar=lib/log4j.jar
 main.junit.jar=lib/junit.jar
 ooxml.dom4j.jar=ooxml-lib/dom4j.jar
-ooxml.xmlbeans.jar=ooxml-lib/xmlbeans_xbean.jar
+ooxml.xmlbeans23.jar=ooxml-lib/xmlbeans_xbean.jar
+ooxml.xmlbeans26.jar=ooxml-lib/xmlbeans_xbean.jar
 disconnected=1
 DSTAMP=%{reldate}
 EOF
@@ -143,16 +133,11 @@ mkdir -p $RPM_BUILD_ROOT%{_mavenpomdir}
 cd build/dist
 for jar in *.jar
 do
-  jarname=${jar/-%{version}%{?rcver}-%{reldate}.jar/}
+  jarname=${jar/-%{version}*.jar/}
   cp -p ${jar} $RPM_BUILD_ROOT%{_javadir}/poi/apache-${jarname}.jar
   ln -s apache-${jarname}.jar $RPM_BUILD_ROOT%{_javadir}/poi/${jarname}.jar
   #pom
-%if 0%{?fedora}
-# dumb strict policies
-#  cp -p $RPM_SOURCE_DIR/${jarname}-%{version}%{?rcver}.pom \
-%else
-  cp -p ../../${jarname}-%{version}%{?rcver}.pom \
-%endif
+  cp -p %{_sourcedir}/${jarname}-%{version}*.pom \
         $RPM_BUILD_ROOT%{_mavenpomdir}/JPP.poi-${jarname}.pom
   %add_maven_depmap JPP.poi-${jarname}.pom poi/${jarname}.jar
 done
@@ -169,11 +154,10 @@ ln -s ../../javadoc/%{name} docs/apidocs
 
 
 %check
-%if 0
-ant -propertyfile build.properties test
-%else
+# To enable 8-bit character tests
+export LANG=en_US.UTF-8
+# Ignore test failures for now
 ant -propertyfile build.properties test || :
-%endif
 
 
 %files -f build/dist/.mfiles
@@ -190,6 +174,15 @@ ant -propertyfile build.properties test || :
 
 
 %changelog
+* Thu Sep 4 2014 Orion Poplawski <orion@cora.nwra.com> - 3.10.1-1
+- Update to 3.10.1 (Bug 1138135: CVE-2014-3574 CVE-2014-3529)
+
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.10-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Mon Feb 24 2014 Orion Poplawski <orion@cora.nwra.com> - 3.10-1
+- Update to 3.10
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.9-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 

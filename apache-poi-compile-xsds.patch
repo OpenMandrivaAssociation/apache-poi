@@ -1,0 +1,24 @@
+diff -up poi-3.10-FINAL/build.xml.compile-xsds poi-3.10-FINAL/build.xml
+--- poi-3.10-FINAL/build.xml.compile-xsds	2014-02-24 11:35:56.338955560 -0700
++++ poi-3.10-FINAL/build.xml	2014-02-24 11:38:39.337139830 -0700
+@@ -454,16 +454,14 @@ under the License.
+     </target>
+     <target name="check-compiled-ooxml-xsds" depends="fetch-ooxml-xsds">
+         <condition property="ooxml-compiled-xsds.present">
+-            <or>
++            <and>
+                 <available file="${ooxml.xsds.jar}"/>
+-                <isset property="disconnected"/>
+-            </or>
++            </and>
+         </condition>
+         <condition property="ooxml-compiled-encryption-xsds.present">
+-            <or>
++            <and>
+                 <available file="${ooxml.encryption.jar}"/>
+-                <isset property="disconnected"/>
+-            </or>
++            </and>
+         </condition>
+     </target>
+     <target name="compile-ooxml-xsds" unless="ooxml-compiled-xsds.present"

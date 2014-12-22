@@ -1,0 +1,2 @@
+# Needed due to the way the rpm is built
+addFilter("E: use-of-RPM_SOURCE_DIR")

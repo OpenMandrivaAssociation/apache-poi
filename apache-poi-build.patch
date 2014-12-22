@@ -1,0 +1,12 @@
+diff -up poi-3.10.1/build.xml.build poi-3.10.1/build.xml
+--- poi-3.10.1/build.xml.build	2014-09-04 08:32:13.413603042 -0600
++++ poi-3.10.1/build.xml	2014-09-04 08:39:47.515564322 -0600
+@@ -285,7 +285,7 @@ under the License.
+ 
+     <path id="lib.jacoco">
+         <fileset dir="lib">
+-            <include name="org.jacoco*.jar" />
++            <include name="jacoco*.jar" />
+             <include name="asm-all-4*.jar" />
+         </fileset>
+     </path>

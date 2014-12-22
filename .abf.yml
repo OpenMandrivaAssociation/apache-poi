@@ -1,3 +1,9 @@
 sources:
   Office-Open-XML-1st-edition-Part4-PDF.zip: 1b3ddfa3ad13a9138f5399bdc4c10b54dd9df9d0
-  poi-src-3.9-20121203.tar.gz: 3a8660b9c99111b72365269e23fefae5e6bdcf4b
+  poi-3.10.1.pom: 07fb7f1f62dc1bc048d73eda35279600277b2b57
+  poi-examples-3.10.1.pom: 70eb73c1730fd966e5696cfddf4a8522db746e28
+  poi-excelant-3.10.1.pom: 7cd9ac7958260009c0f1e6bb84a4616fa1ed8995
+  poi-ooxml-3.10.1.pom: f8690c68c0759327e254b1dd4a63fcf5d3bb753a
+  poi-ooxml-schemas-3.10.1.pom: 5891bf1f32d9a1f029ade20c02c47c8a28f6a533
+  poi-scratchpad-3.10.1.pom: cadd63bcbdff5e5e2101e210e264836ff3bb27f1
+  poi-src-3.10.1-20140818.tar.gz: 0303a95fc7f73b330cde25b14115cb0de7ceda53
