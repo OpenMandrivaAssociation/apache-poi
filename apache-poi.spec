@@ -4,7 +4,7 @@
 
 Name:           apache-poi
 Version:        3.10.1
-Release:        1.2
+Release:        1.3
 Summary:        The Java API for Microsoft Documents
 
 Group:          Development/Java
