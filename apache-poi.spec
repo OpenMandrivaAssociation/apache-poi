@@ -9,7 +9,7 @@ Summary:        The Java API for Microsoft Documents
 
 Group:          Development/Java
 License:        ASL 2.0
-URL:            http://poi.apache.org/
+URL:            https://poi.apache.org/
 Source0:        http://www.apache.org/dist/poi/release/src/poi-src-%{version}-%{reldate}.tar.gz
 #Source0:        http://www.apache.org/dist/poi/dev/src/poi-src-%{version}%{?rcver}-%{reldate}.tar.gz
 Source1:        Office-Open-XML-1st-edition-Part4-PDF.zip
